@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Sistema de tarefas {% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index')}}"> Inicio</a>
+        {% if current_user.is_authenticad %}
+            <a href="{{ url_for('task')}}"> Minhas tarefas</a>
+            <a href="{{ url_for('logout')}}"> Sair</a>
+        {% else %}
+            <a href="{{ url_for('login')}}">Login</a>
+            <a href="{{ url_for('register') }}">Registrar</a>
+        {% endif %}
+    </nav>
+    <main>
+        {% with messagens = get_flashed_messagens(with_categories=true) %}
+            {% if messagens %}
+                {% for category, message in messagens %}
+                    <p class="flash {{category}}">{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %} {% endblock %}
+    </main>
+</body>
+</html>

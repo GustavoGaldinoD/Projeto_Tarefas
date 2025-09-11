@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %} nova tarefa {% endblock %}
+
+{% block content %}
+    <h2>Adicionar tarefa</h2>
+    <form method="POST">
+        <label for="title"> Titulo</label>
+        <input type="title" name="title" id="title" required >
+
+        <button type="submit"> Adicionar</button>
+    </form>
+
+{% endblock %}
