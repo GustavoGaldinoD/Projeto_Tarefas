@@ -93,14 +93,58 @@ def logout():
     return redirect(url_for('index'))
 
 #listar tarefas --  READ
-@app.route
+@app.route('/tasks')
 @login_required
 def tasks():
-    user_tasks: Task.query.filter_by(user_id=current_user.id).all()
+    user_tasks: Task.query.filter_by(user_id=current_user.id).all() # type: ignore
     return render_template('tasks.html', tasks=user_tasks)
 
 
- 
+#adicionar tarefas
+@app.route('/add_task', methods=['GET', 'POST'])
+@login_required
+def add_task():
+    if request.method == 'POST':
+        title = request.form['title']
+
+        new_task = Task(title=title, user_id=current_user.id)
+
+        db.session.add(new_task)
+        db.session.commit()
+
+        flash('tarefa adicionada com sucesso!', 'success')
+        return redirect(url_for('tasks'))
+    return render_template('add_tasks.html')
+
+#atualizar status da tarefa = UPDATE
+@app.route('/update_task/<int:id>')
+@login_required
+def update_task(id):
+    task = Task.query.get_or_404(id)
+
+    if Task.user_id != current_user.id:
+        flash('voce nao tem permissao para isso', 'danger')
+        return redirect(url_for('tasks'))
+    
+    task.status = 'Conclusao' if task.status == 'Pendente' else 'Pendente'
+    db.session.commit()
+    return redirect
+
+#deletar tarefa -- DELETE
+@app.route('/delete_task/<int:id>')
+@login_required
+def delete_task(id):
+    task = Task.query.get_or_404(id)
+
+    if task.user_id != current_user.id:
+        flash('voce nao tem permissao para isso', 'danger')
+        return redirect(url_for('task'))
+    
+    db.session.delete(task)
+    db.session.commit()
+    flash('tarefa excluida com  sucesso', 'info')
+    return redirect(url_for('tasks'))
+
 
 #--------------------------------------------------
 # CRIAR BANCO NA PRIMEIRA EXECUÇAO
